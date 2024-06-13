@@ -14,7 +14,7 @@ def str2bool(v):
 
 # Process none argument
 def str2none(v):
-    if v.lower()=='none':
+    if v.lower() == 'none':
         return None
     else:
         return v
@@ -26,13 +26,14 @@ class Config(object):
         for k, v in kwargs.items():
             setattr(self, k, v)
 
-        self.datasets = ['SumMe','TVSum']
+        self.datasets = ['SumMe', 'TVSum']
         self.SumMe_len = 25
         self.TVSum_len = 50
 
         # Set device
-        self.device = torch.device(self.device)
-        torch.cuda.set_device(self.device)
+        self.device = torch.device(self.device if torch.cuda.is_available() else 'cpu')
+        if torch.cuda.is_available():
+            torch.cuda.set_device(self.device)
 
         # Set seed
         self.set_seed()
@@ -42,10 +43,11 @@ class Config(object):
         random.seed(self.seed)
         np.random.seed(self.seed)
         torch.manual_seed(self.seed)
-        torch.cuda.manual_seed(self.seed)
-        torch.cuda.manual_seed_all(self.seed)
-        torch.backends.cudnn.benchmark = False
-        torch.backends.cudnn.deterministic = True
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed(self.seed)
+            torch.cuda.manual_seed_all(self.seed)
+            torch.backends.cudnn.benchmark = False
+            torch.backends.cudnn.deterministic = True
 
 # Define all configurations
 def get_config(parse=True, **optional_kwargs):
@@ -57,7 +59,7 @@ def get_config(parse=True, **optional_kwargs):
     parser.add_argument('--batch_size', default='1')
     parser.add_argument('--learning_rate', default='1e-3')
     parser.add_argument('--weight_decay', default='1e-7')
-    
+
     parser.add_argument('--model_name', type=str, default='GoogleNet_Attention')
     parser.add_argument('--Scale', type=str2none, default=None)
     parser.add_argument('--Softmax_axis', type=str2none, default='TD')

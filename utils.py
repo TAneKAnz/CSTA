@@ -109,12 +109,14 @@ def report_params(model_name,
 
 # Print all arguments and GPU setting
 def print_args(args):
-    print(args.kwargs)
-    print(f"GPU: {torch.cuda.is_available()}")
-    print(f"GPU count: {torch.cuda.device_count()}")
-    print(f"GPU name: {torch.cuda.get_device_name(0)}")
-    print(f"CUDA: {torch.version.cuda}")
-    print(f"cuDNN: {torch.backends.cudnn.version()}")
+    print(f"Arguments: {args}")
+    if torch.cuda.is_available():
+        print(f"GPU name: {torch.cuda.get_device_name(0)}")
+        print(f"GPU: {torch.cuda.is_available()}")
+        print(f"GPU count: {torch.cuda.device_count()}")
+    else:
+        print("CUDA is not available. Running on CPU.")
+
 
 # Load ground truth for TVSum
 def get_gt(dataset):
